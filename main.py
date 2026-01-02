@@ -38,15 +38,15 @@ init()
 # --------------------------------------------------
 # HEADER
 # --------------------------------------------------
-st.title("🤖 AI Social Support Assessment")
+st.title("AI Social Support Assessment")
 
 st.markdown("""
 This service helps assess eligibility for **financial assistance** and recommends
 **economic enablement support** such as training, job matching, or career counseling.
 
 ### You can provide information in two ways:
-- 📄 Upload documents (ID, payslips, bank statements, resume)
-- ✍️ Type information in plain language
+- Upload documents (ID, payslips, bank statements, resume)
+- Type information in plain language
 
 **Example:**
 > *salary 6000, employed, 2 dependents*
@@ -95,7 +95,7 @@ for m in st.session_state.chat_history:
 # START ASSESSMENT BUTTON
 # --------------------------------------------------
 if st.session_state.phase == "INTRO" and not st.session_state.assessment_started:
-    if st.button("▶ Start Assessment"):
+    if st.button("Start Assessment"):
         st.session_state.assessment_started = True
         st.session_state.phase = "COLLECT"
         st.session_state.processing_done = False

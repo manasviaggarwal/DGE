@@ -61,16 +61,6 @@ def document_ingestion_agent(state: Dict[str, Any]) -> Dict[str, Any]:
 def document_ingestion_agent_old(state: Dict[str, Any]) -> Dict[str, Any]:
     """
     Ingest uploaded documents and extract content in a uniform format.
-
-    Output schema per document:
-    {
-        file_name: str
-        file_type: str
-        mime_type: str
-        size_kb: float
-        raw_text: Optional[str]
-        tables: Optional[list]
-    }
     """
 
     check_cancel(state)

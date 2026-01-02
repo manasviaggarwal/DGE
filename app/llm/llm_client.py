@@ -1,6 +1,7 @@
 import requests
 import json
 import logging
+import re
 
 logger = logging.getLogger("LLMClient")
 
@@ -8,19 +9,13 @@ OLLAMA_URL = "http://localhost:11434/api/generate"
 MODEL_NAME = "llama3.1:8b"  # or 
 
 
-import json
-import re
-import requests
-
-OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL_NAME = "llama3.1:8b"
-
 def extract_json_block(text: str) -> str:
     """Extract the first JSON object from text."""
     match = re.search(r"\{.*\}", text, re.DOTALL)
     if not match:
         raise ValueError("No JSON object found")
     return match.group(0)
+
 
 def repair_json(text: str) -> str:
     """Fix common LLM JSON issues."""
@@ -46,7 +41,6 @@ def call_llm_json(prompt: str) -> dict:
     r.raise_for_status()
 
     raw_text = r.json().get("response", "")
-    print(raw_text, '8********************************************')
 
     try:
         json_text = extract_json_block(raw_text)
@@ -54,46 +48,6 @@ def call_llm_json(prompt: str) -> dict:
         return json.loads(json_text)
     except Exception as e:
         raise ValueError(f"Invalid JSON from LLM: {raw_text}") from e
-
-
-def call_llm_json_old(prompt: str, timeout: int = 180) -> dict:
-    """
-    Calls local Ollama LLM and safely extracts JSON.
-    """
-
-    payload = {
-        "model": MODEL_NAME,
-        "prompt": prompt,
-        "stream": False,
-        "options": {
-            "temperature": 0.1,
-            "num_predict": 1024
-        }
-    }
-
-    try:
-        response = requests.post(
-            OLLAMA_URL,
-            json=payload,
-            timeout=timeout
-        )
-        response.raise_for_status()
-
-        raw_text = response.json().get("response", "")
-        logger.debug(f"Raw LLM output: {raw_text}")
-
-        # Extract first JSON block
-        start = raw_text.find("{")
-        end = raw_text.rfind("}")
-
-        if start == -1 or end == -1:
-            raise ValueError("No JSON detected in LLM output")
-
-        return json.loads(raw_text[start:end + 1])
-
-    except Exception as e:
-        logger.error(f"LLM JSON call failed: {e}")
-        return {}
 
         
 def call_llm(prompt: str, timeout: int = 300) -> str:
@@ -223,34 +177,3 @@ def call_llm(prompt: str, timeout: int = 300) -> str:
 #     except Exception as e:
 #         logger.error(f"LLM JSON call failed: {e}", exc_info=True)
 #         return {}
-
-
-def call_llm(prompt: str, timeout: int = 300) -> str:
-    """
-    Call Ollama local LLM and return plain text response.
-    """
-
-    payload = {
-        "model": MODEL_NAME,
-        "prompt": prompt,
-        "stream": False,
-        "options": {
-            "temperature": 0.3,
-            "num_predict": 512
-        }
-    }
-
-    try:
-        response = requests.post(
-            OLLAMA_URL,
-            json=payload,
-            timeout=timeout
-        )
-        response.raise_for_status()
-
-        return response.json().get("response", "").strip()
-
-    except Exception as e:
-        logger.error(f"LLM text call failed: {e}")
-        return "Explanation unavailable due to LLM service issue."
-

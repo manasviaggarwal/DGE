@@ -1,111 +1,3 @@
-# import json
-# from typing import Dict, Any, List
-# from app.llm.llm_client import call_llm_json
-# import logging
-
-# logger = logging.getLogger("DataExtractionAgent")
-
-# # -----------------------------
-# # EXTRACTION SCHEMA
-# # -----------------------------
-# SCHEMA = {
-#     "income": "Monthly income (number)",
-#     "family_size": "Number of dependents (number)",
-#     "employment_years": "Total years of work experience (number)",
-#     "employment_status": "employed | unemployed | self-employed | student | retired",
-#     "education_level": "high_school | bachelor | masters | phd | unknown",
-#     "age": "Age in years (number)",
-#     "assets": "Total assets amount (number)",
-#     "liabilities": "Total liabilities amount (number)",
-# }
-
-# MAX_CHARS = 1800   # 🔑 safe for Ollama JSON
-
-# # -----------------------------
-# # Utilities
-# # -----------------------------
-# def chunk_text(text: str, size: int = MAX_CHARS) -> List[str]:
-#     return [text[i:i + size] for i in range(0, len(text), size)]
-
-# def safe_number(v):
-#     try:
-#         return float(v)
-#     except Exception:
-#         return None
-
-# def merge_results(results: List[dict]) -> dict:
-#     """First non-null value wins"""
-#     merged = {k: None for k in SCHEMA}
-#     for r in results:
-#         if not isinstance(r, dict):
-#             continue
-#         for k in SCHEMA:
-#             if merged[k] is None and r.get(k) is not None:
-#                 merged[k] = r.get(k)
-#     return merged
-
-# # -----------------------------
-# # MAIN AGENT
-# # -----------------------------
-# def data_extraction_agent(state: Dict[str, Any]) -> Dict[str, Any]:
-#     texts: List[str] = []
-
-#     if state.get("user_input"):
-#         texts.append(state["user_input"])
-
-#     for d in state.get("documents", []):
-#         if d.get("raw_text"):
-#             texts.append(d["raw_text"])
-
-#     full_text = "\n\n".join(texts).strip()
-
-#     if not full_text:
-#         state["extracted_data"] = {k: {"value": None} for k in SCHEMA}
-#         return state
-
-#     chunks = chunk_text(full_text)
-
-#     partial_results = []
-
-#     for i, chunk in enumerate(chunks):
-#         prompt = f"""
-#             You are a strict information extraction system.
-
-#             Return EXACTLY one valid JSON object.
-#             - Use double quotes for all keys and values.
-#             - Do NOT add explanations.
-#             - Do NOT add comments.
-#             - Do NOT include markdown.
-#             - If a value is missing, return null.
-
-#             Schema:
-#             {json.dumps(SCHEMA, indent=2)}
-
-#             Input:
-#             \"\"\"
-#             {chunk}
-#             \"\"\"
-#         """
-
-#         try:
-#             raw = call_llm_json(prompt)
-#             partial_results.append(raw)
-#         except Exception as e:
-#             logger.warning(f"Extraction failed on chunk {i}: {e}")
-
-#     merged = merge_results(partial_results)
-
-#     extracted = {}
-#     for k in SCHEMA:
-#         v = merged.get(k)
-#         if k in {"income", "family_size", "employment_years", "age", "assets", "liabilities"}:
-#             v = safe_number(v)
-#         extracted[k] = {"value": v}
-
-#     state["extracted_data"] = extracted
-#     return state
-
-
 import json
 import logging
 from typing import Dict, Any, List
@@ -137,7 +29,7 @@ KEYWORDS = [
 ]
 
 
-MAX_CHARS = 1000   # 🔑 safe for Ollama
+MAX_CHARS = 1000  
 
 import re
 
@@ -296,10 +188,117 @@ Input:
     state["extracted_data"] = extracted
     user_text = state.get("user_input", "")
 
-    # print('9999999999999999999999999')
-    # print(clean_text)
 
     state["llm_context"] = clean_text #user_text[:500] if user_text else None
-    print("STATE KEYS AFTER EXTRACTION:", state['llm_context'])
 
     return state
+
+
+# import json
+# from typing import Dict, Any, List
+# from app.llm.llm_client import call_llm_json
+# import logging
+
+# logger = logging.getLogger("DataExtractionAgent")
+
+# # -----------------------------
+# # EXTRACTION SCHEMA
+# # -----------------------------
+# SCHEMA = {
+#     "income": "Monthly income (number)",
+#     "family_size": "Number of dependents (number)",
+#     "employment_years": "Total years of work experience (number)",
+#     "employment_status": "employed | unemployed | self-employed | student | retired",
+#     "education_level": "high_school | bachelor | masters | phd | unknown",
+#     "age": "Age in years (number)",
+#     "assets": "Total assets amount (number)",
+#     "liabilities": "Total liabilities amount (number)",
+# }
+
+# MAX_CHARS = 1800   # 🔑 safe for Ollama JSON
+
+# # -----------------------------
+# # Utilities
+# # -----------------------------
+# def chunk_text(text: str, size: int = MAX_CHARS) -> List[str]:
+#     return [text[i:i + size] for i in range(0, len(text), size)]
+
+# def safe_number(v):
+#     try:
+#         return float(v)
+#     except Exception:
+#         return None
+
+# def merge_results(results: List[dict]) -> dict:
+#     """First non-null value wins"""
+#     merged = {k: None for k in SCHEMA}
+#     for r in results:
+#         if not isinstance(r, dict):
+#             continue
+#         for k in SCHEMA:
+#             if merged[k] is None and r.get(k) is not None:
+#                 merged[k] = r.get(k)
+#     return merged
+
+# # -----------------------------
+# # MAIN AGENT
+# # -----------------------------
+# def data_extraction_agent(state: Dict[str, Any]) -> Dict[str, Any]:
+#     texts: List[str] = []
+
+#     if state.get("user_input"):
+#         texts.append(state["user_input"])
+
+#     for d in state.get("documents", []):
+#         if d.get("raw_text"):
+#             texts.append(d["raw_text"])
+
+#     full_text = "\n\n".join(texts).strip()
+
+#     if not full_text:
+#         state["extracted_data"] = {k: {"value": None} for k in SCHEMA}
+#         return state
+
+#     chunks = chunk_text(full_text)
+
+#     partial_results = []
+
+#     for i, chunk in enumerate(chunks):
+#         prompt = f"""
+#             You are a strict information extraction system.
+
+#             Return EXACTLY one valid JSON object.
+#             - Use double quotes for all keys and values.
+#             - Do NOT add explanations.
+#             - Do NOT add comments.
+#             - Do NOT include markdown.
+#             - If a value is missing, return null.
+
+#             Schema:
+#             {json.dumps(SCHEMA, indent=2)}
+
+#             Input:
+#             \"\"\"
+#             {chunk}
+#             \"\"\"
+#         """
+
+#         try:
+#             raw = call_llm_json(prompt)
+#             partial_results.append(raw)
+#         except Exception as e:
+#             logger.warning(f"Extraction failed on chunk {i}: {e}")
+
+#     merged = merge_results(partial_results)
+
+#     extracted = {}
+#     for k in SCHEMA:
+#         v = merged.get(k)
+#         if k in {"income", "family_size", "employment_years", "age", "assets", "liabilities"}:
+#             v = safe_number(v)
+#         extracted[k] = {"value": v}
+
+#     state["extracted_data"] = extracted
+#     return state
+
+
