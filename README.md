@@ -1,6 +1,8 @@
 
-AI-Driven Social Support Eligibility & Enablement System
-Overview
+AI-Driven Social Support Eligibility & Enablement System 
+
+Overview 
+
 This project implements an AI-driven, agentic decision support system for evaluating applications for economic social support and economic enablement programs. It combines classical ML, GenAI, and agent-based orchestration to provide transparent, auditable decisions.
 Key Capabilities
 - Application assessment based on income, employment history, family size, wealth, and demographics.
