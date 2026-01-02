@@ -75,17 +75,16 @@ By default, it exposes a local API at:
 http://localhost:11434/api/generate
 
 ## Step 4: Verify Ollama is Running
-
 ollama list
+
 ---
 
 ## Running the Application
 
-### 1. Clone the Repository
-```bash
+# 1. Clone the Repository
 git clone <repo-url> cd DGE
 
-### 2. Create and Activate a Virtual Environment
+# 2. Create and Activate a Virtual Environment
 To set up a Python virtual environment, run: python -m venv venv
 
 ### macOS / Linux:
