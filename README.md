@@ -81,24 +81,24 @@ ollama list
 
 ## Running the Application
 
-# 1. Clone the Repository
+### 1. Clone the Repository
 git clone <repo-url> cd DGE
 
-# 2. Create and Activate a Virtual Environment
+### 2. Create and Activate a Virtual Environment
 To set up a Python virtual environment, run: python -m venv venv
 
-### macOS / Linux:
+#### macOS / Linux:
 source venv/bin/activate
-### Windows
+#### Windows
 venv\Scripts\activate
 
-## 3. Install Dependencies
+### 3. Install Dependencies
 pip install -r requirements.txt
 
-## 4.	Start the local GenAI backend (Ollama)
+### 4.	Start the local GenAI backend (Ollama)
 ollama pull llama3.1:8b
 
-## 5. Run the Application
+### 5. Run the Application
 streamlit run main.py
 
 The application will open automatically in your browser.
